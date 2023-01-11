@@ -1,70 +1,58 @@
 import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
-
-import { ContactForm } from 'components/ContactForm/ContactForm';
+import { FeedbackOptions } from './components/FeedbackOptions/FeedbackOptions';
+import { Statistics } from './components/Statistics/Statistics';
+import { Notification } from 'components/Notification/Notification'; 
 import { Section } from 'components/Section/Section';
-import { ContactList } from 'components/ContactList/ContactList';
-import { Filter } from 'components/Filter/Filter';
 
 
 export class App extends Component {
-   
+    static defaultProps = {
+    total: 0,
+    positivePercentage: 0,
+  };
+
   state = {
-  contacts: [
-    {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-  ],
-    filter: '',
-  }
-  
-   getFilteredContacts = () => {
-    const { contacts, filter } = this.state;
-    const filterContactsList = contacts.filter(contact => {
-
-    return contact.name.toLowerCase().includes(filter.toLowerCase());
-    });
-    return filterContactsList;
+    good: 0,
+    neutral: 0,
+    bad: 0,
   };
 
- 
-
-  filterList = event => {
-    const { name, value } = event.target;
-
-    this.setState({ [name]: value });
+  countTotalFeedback = () => {
+    const { good, neutral, bad } = this.state;
+    const result = good + neutral + bad;
+    return result;
   };
 
-  formSubmit = ({ name, number }) => {
-    const contact = { id: nanoid(), name, number };
-    if (this.state.contacts.some(e => e.name === name)) {
-    return alert(`${name} is already in contacts!`);
-    }
-
-    this.setState(({ contacts }) => ({ contacts: [contact, ...contacts] }));
+  countPositivePercentage = () => {
+    const { good } = this.state;
+    const result = this.countTotalFeedback();
+    const positiveFeedback = (good * 100 ) / result;
+    return Math.round(positiveFeedback);
   };
 
-   deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+  onHandleFeedback = event => {
+    this.setState(prevState => ({ [event]: prevState[event] + 1 }));
   };
 
   render() {
-    
+    const { good, neutral, bad } = this.state;
     return (
       <div>
-        <Section title="Phonebook">
-          <ContactForm onSubmit={this.formSubmit}/>
+        <Section title='Please leave feedback'>
+        <FeedbackOptions options={Object.keys(this.state)}
+          onLeaveFeedback={this.onHandleFeedback} />
         </Section>
-        
-        <Section title="Contacts">
-          <Filter value={this.filter} onChange={this.filterList}/>
-          <ContactList contacts={this.getFilteredContacts()}
-          deleteContact={this.deleteContact}/>
-        </Section>
-
+      
+        <Section title='Statistics'>
+        {this.countTotalFeedback() !== 0 ? (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={this.countTotalFeedback()}
+            positivePercentage={this.countPositivePercentage()} />
+        ) : (<Notification message="There is no feedback" />)}
+      </Section>
       </div>
     );
 }
