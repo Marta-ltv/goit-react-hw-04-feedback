@@ -42,11 +42,7 @@ export function App() {
   useEffect(() => {
     const total = good + neutral + bad;
     setTotal(total);
-  }, [good, neutral, bad])
- 
-const countTotalFeedback = () => {
-    return bad + neutral + good;
-  };  
+  }, [good, neutral, bad]);
   
   const countPositivePercentage = () => {
     const positiveFeedback = (good * 100 ) / total;
@@ -61,12 +57,12 @@ const countTotalFeedback = () => {
         </Section>
       
         <Section title='Statistics'>
-        {countTotalFeedback() !== 0 ? (
+        {total !== 0 ? (
           <Statistics
             good={good}
             neutral={neutral}
             bad={bad}
-            total={countTotalFeedback()}
+            total={total}
             positivePercentage={countPositivePercentage()} />
         ) : (<Notification message="There is no feedback" />)}
       </Section>
