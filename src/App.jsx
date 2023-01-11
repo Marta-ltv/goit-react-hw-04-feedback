@@ -44,7 +44,10 @@ export function App() {
     setTotal(total);
   }, [good, neutral, bad])
  
-
+const countTotalFeedback = () => {
+    return bad + neutral + good;
+  };  
+  
   const countPositivePercentage = () => {
     const positiveFeedback = (good * 100 ) / total;
     return Math.round(positiveFeedback);
