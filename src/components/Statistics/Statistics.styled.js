@@ -8,7 +8,7 @@ font-weight: 400;
 
 export const StatItem = styled.li`
 font-size: 30px;
-
+font-weight: 600;
 `;
 
 export const StatSpan = styled.span`
